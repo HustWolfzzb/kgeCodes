@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="ppy@222.20.94.69:50016">
+    <serverData>
+      <paths name="ppy@222.20.94.69:50016">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/TransE" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
