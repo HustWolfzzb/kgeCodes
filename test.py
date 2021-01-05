@@ -107,17 +107,19 @@ class Test:
     def getRank(self):
         start = time.clock()
         cou = 0
-        all_tail_topk = {}
+        no_type = []
+        all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1=' ')
         for triplet in self.tripleListTest:
             # print("第 %s 个 Triple"%cou)
-            if cou % 1000 == 0:
-                print("Time using: %s, Tested Triples:%s"%(round((time.clock() - start)/60, 2), cou))
+            if cou % 200 == 0:
+                print("Time using: %s mins, Tested Triples:%s"%(round((time.clock() - start)/60, 2), cou))
             rankList = {}
             try:
                 if self.type_filter:
                     if not all_tail_topk.get((triplet[0], triplet[2])):
                         tail_topk = self.calc_k_sim(self.ent2Type[triplet[0]], triplet[2])
                         all_tail_topk[(triplet[0], triplet[2])] = tail_topk
+                        no_type.append((triplet[0], triplet[2]))
                     else:
                         tail_topk = all_tail_topk.get((triplet[0], triplet[2]))
             except KeyError as e:
@@ -155,6 +157,51 @@ class Test:
             cou += 1
             # if cou % 10000 == 0:
             #     print("getRank" + str(cou))
+        print("未知的类型头和关系长度%s"%len(no_type))
+        print('Time Usage: ',time.clock() - start)
+
+    def outputTopK(self):
+        start = time.clock()
+        cou = 0
+        all_tail_type_topk = {}
+        alltype = list(self.typeList.keys())
+        for triplet in self.tripleListTest:
+            # print("第 %s 个 Triple"%cou)
+            if cou % 100 == 0:
+                print("Time using: %s mins, Tested Triples:%s"%(round((time.clock() - start)/60, 2), cou))
+            cou+=1
+            try:
+                types = self.ent2Type[triplet[0]]
+                top_k = []
+                type_sim = {}
+                r = triplet[2]
+                for Type in types:
+                    if all_tail_type_topk.get((Type, r)) != None:
+                        continue
+                    h_r = array(self.typeList[Type]) + array(self.typeRelationList[triplet[2]])
+                    for t in alltype:
+                        type_sim[t] = self.calc_cos_sim(h_r, array(self.typeList[t]))
+                    sorted_sim = sorted(type_sim.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
+                    # if self.show:
+                    #     print(sorted_sim)
+                    #     self.show = False
+                    for x in range(20):
+                        top_k.append(sorted_sim[x][0])
+                    all_tail_type_topk[(Type, r)] = top_k
+            except KeyError as e:
+                print(e)
+                continue
+        with open('top5.txt','w',encoding='utf8') as top5:
+            with open('top10.txt','w',encoding='utf8') as top10:
+                with open('top15.txt','w',encoding='utf8') as top15:
+                    with open('top20.txt','w',encoding='utf8') as top20:
+                        files = [top5,top10,top15,top20]
+                        num = [5,10,15,20]
+                        for i in range(len(files)):
+                            fi = files[i]
+                            for key, value in all_tail_type_topk.items():
+                                fi.write(key[0] +',' + key[1] + ','+' '.join(value[:num[i]])+'\n')
+
         print('Time Usage: ',time.clock() - start)
 
     def getRelationRank(self):
@@ -180,6 +227,7 @@ class Test:
                 print("getRelationRank" + str(cou))
 
     def getMeanRank(self):
+        print("命中个数%s"%(len(self.rank)))
         num = 0
         for r in self.rank:
             num += r[3]
@@ -202,7 +250,7 @@ def openD(dir, sp="\t"):
     with open(dir) as file:
         lines = file.readlines()
         for line in lines:
-            if num > 10:
+            if num > 1000:
                 break
             triple = line.strip().split(sp)
             if(len(triple)<3):
@@ -211,6 +259,46 @@ def openD(dir, sp="\t"):
             num += 1
     print("num", num)
     return num, list
+
+def readTypesConstriant(file = 'hr2types-all.txt', sp=',',sp1='\t'):
+    hr2types = {}
+    with open(file) as f:
+        lines = f.readlines()
+        for l in lines:
+            h,r,ts = l.strip().split(sp)
+            hr2types[(h,r)] = ts.split(sp1)
+    return hr2types
+
+def combine_Topk_Constriant(file='top15.txt',sp=',',sp1=' '):
+    topk = {}
+    with open(file) as f:
+        lines = f.readlines()
+        for l in lines:
+            h,r,ts = l.strip().split(sp)
+            topk[(h,r)] = ts.split(sp1)
+    hr2types = readTypesConstriant()
+    print(len(hr2types), len(topk))
+    overleap = 0
+    hr_1 = {}
+    with open('hr2types-complete.txt','w', encoding='utf8') as hr2txt:
+        for hr in hr2types.keys():
+            try:
+                hr_1[hr] = list(set(hr2types[hr] + topk[hr]))
+                overleap += 1
+            except KeyError as e:
+                hr_1[hr] = hr2types[hr]
+            hr2txt.write(hr[0] + ',' + hr[1] + ',' + " ".join(hr2types[hr]) + '\n')
+        for hr in topk.keys():
+            if hr_1.get(hr) != None:
+                continue
+            try:
+                hr_1[hr] = list(set(hr2types[hr] + topk[hr]))
+                overleap += 1
+            except KeyError as e:
+                hr_1[hr] = topk[hr]
+            hr2txt.write(hr[0] + ',' + hr[1] + ',' + " ".join(hr_1[hr]) + '\n')
+
+    print("重叠个数:%s"%overleap)
 
 def loadData(str):
     fr = open(str)
@@ -251,14 +339,20 @@ if __name__ == '__main__':
     # testHeadRaw.getRelationRank()
     # print(testHeadRaw.getMeanRank())
     # testHeadRaw.writeRank("data/" + "testRelationRaw" + ".txt")
-    for k in [0,5,10,15,20]:
+
+    # testTailRaw = Test(entityList, entityVectorList, typeList, typeVectorList, relationList, relationVectorList, typeRelationList, typeRelationVectorList,  tripleListTrain, tripleListTest, label = "tail",k=20)
+    # testTailRaw.outputTopK()
+    combine_Topk_Constriant()
+    for k in [5,10,15,20]:
         testTailRaw = Test(entityList, entityVectorList, typeList, typeVectorList, relationList, relationVectorList, typeRelationList, typeRelationVectorList,  tripleListTrain, tripleListTest, label = "tail",k=k)
+        # testTailRaw.outputTopK()
         testTailRaw.getRank()
         print(testTailRaw.getMeanRank())
-        # if k>0:
-        #     testTailRaw.writeRank("data/" + "testTailRaw_filter_k" + str(k) + ".txt")
-        # else:
-        #     testTailRaw.writeRank("data/" + "testTailRaw_origin" + ".txt")
+        if k>0:
+            testTailRaw.writeRank("data/" + "testTailRaw_filter_k" + str(k) + ".txt")
+        else:
+            testTailRaw.writeRank("data/" + "testTailRaw_origin" + ".txt")
+
 
     # testHeadFit = Test(entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest, isFit = True)
     # testHeadFit.getRank()

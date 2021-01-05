@@ -279,6 +279,6 @@ if __name__ == '__main__':
     transE = TransE(entityList, relationList, tripleList, margin=1, dim=100)
     print("TranE初始化...")
     transE.initialize()
-    transE.transE(1000)
+    transE.transE(10000)
     transE.writeRelationVector("data/FB15k/relationVector.txt")
     transE.writeEntilyVector("data/FB15k/entityVector.txt")
