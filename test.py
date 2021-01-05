@@ -108,6 +108,7 @@ class Test:
         start = time.clock()
         cou = 0
         no_type = []
+        all_hr_num=0
         all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1=' ')
         for triplet in self.tripleListTest:
             # print("第 %s 个 Triple"%cou)
@@ -122,6 +123,7 @@ class Test:
                         no_type.append((triplet[0], triplet[2]))
                     else:
                         tail_topk = all_tail_topk.get((triplet[0], triplet[2]))
+                    all_hr_num+=1
             except KeyError as e:
                 # print(e)
                 continue
@@ -157,7 +159,7 @@ class Test:
             cou += 1
             # if cou % 10000 == 0:
             #     print("getRank" + str(cou))
-        print("未知的类型头和关系长度%s"%len(no_type))
+        print("未知的类型头和关系长度%s, 所有h+r的数目%s"%(len(no_type), all_hr_num))
         print('Time Usage: ',time.clock() - start)
 
     def outputTopK(self):
@@ -269,7 +271,7 @@ def readTypesConstriant(file = 'hr2types-all.txt', sp=',',sp1='\t'):
             hr2types[(h,r)] = ts.split(sp1)
     return hr2types
 
-def combine_Topk_Constriant(file='top15.txt',sp=',',sp1=' '):
+def combine_Topk_Constriant(file='top20.txt',sp=',',sp1=' '):
     topk = {}
     with open(file) as f:
         lines = f.readlines()
@@ -287,7 +289,7 @@ def combine_Topk_Constriant(file='top15.txt',sp=',',sp1=' '):
                 overleap += 1
             except KeyError as e:
                 hr_1[hr] = hr2types[hr]
-            hr2txt.write(hr[0] + ',' + hr[1] + ',' + " ".join(hr2types[hr]) + '\n')
+            hr2txt.write(hr[0] + ',' + hr[1] + ',' + " ".join(hr_1[hr]) + '\n')
         for hr in topk.keys():
             if hr_1.get(hr) != None:
                 continue
@@ -343,7 +345,7 @@ if __name__ == '__main__':
     # testTailRaw = Test(entityList, entityVectorList, typeList, typeVectorList, relationList, relationVectorList, typeRelationList, typeRelationVectorList,  tripleListTrain, tripleListTest, label = "tail",k=20)
     # testTailRaw.outputTopK()
     combine_Topk_Constriant()
-    for k in [5,10,15,20]:
+    for k in [20]:
         testTailRaw = Test(entityList, entityVectorList, typeList, typeVectorList, relationList, relationVectorList, typeRelationList, typeRelationVectorList,  tripleListTrain, tripleListTest, label = "tail",k=k)
         # testTailRaw.outputTopK()
         testTailRaw.getRank()

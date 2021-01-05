@@ -3,20 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3f5d4b0e-65d3-4370-b179-550ec76bd6ec" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TransE.py" beforeDir="false" afterPath="$PROJECT_DIR$/TransE.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/FB15k/entity2vec.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/FB15k/entity2vec.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/FB15k/entityVector.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/FB15k/entityVector.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/FB15k/relation2vec.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/FB15k/relation2vec.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/FB15k/relationVector.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/FB15k/relationVector.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/testTailRaw_filter_k10.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/testTailRaw_filter_k10.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/testTailRaw_filter_k15.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/testTailRaw_filter_k15.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/testTailRaw_filter_k20.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/testTailRaw_filter_k20.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/testTailRaw_filter_k5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/testTailRaw_filter_k5.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/testTailRaw_origin.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/testTailRaw_origin.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/top10.txt" beforeDir="false" afterPath="$PROJECT_DIR$/top10.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/top20.txt" beforeDir="false" afterPath="$PROJECT_DIR$/top20.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/top5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/top5.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,7 +179,7 @@
       <workItem from="1609320720044" duration="1153000" />
       <workItem from="1609335376514" duration="2384000" />
       <workItem from="1609727944938" duration="13168000" />
-      <workItem from="1609814092183" duration="14010000" />
+      <workItem from="1609814092183" duration="14986000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1609750598808</created>
@@ -215,7 +202,14 @@
       <option name="project" value="LOCAL" />
       <updated>1609751213180</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="改进了topk的获取，以及将type约束改为本地">
+      <created>1609846014801</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1609846014801</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -225,7 +219,8 @@
     <MESSAGE value="first commit" />
     <MESSAGE value="commit again" />
     <MESSAGE value="commit again-" />
-    <option name="LAST_COMMIT_MESSAGE" value="commit again-" />
+    <MESSAGE value="改进了topk的获取，以及将type约束改为本地" />
+    <option name="LAST_COMMIT_MESSAGE" value="改进了topk的获取，以及将type约束改为本地" />
   </component>
   <component name="WindowStateProjectService">
     <state x="880" y="385" key="#Deployment" timestamp="1601971570290">
@@ -252,61 +247,61 @@
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
     <state x="1018" y="474" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/-1680.211.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602039018844" />
-    <state x="857" y="307" key="CommitChangelistDialog2" timestamp="1609751213075">
+    <state x="521" y="264" key="CommitChangelistDialog2" timestamp="1609846008834">
       <screen x="0" y="23" width="2560" height="1417" />
     </state>
-    <state x="857" y="307" key="CommitChangelistDialog2/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609751213075" />
+    <state x="521" y="264" key="CommitChangelistDialog2/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609846008834" />
     <state x="100" y="121" width="2360" height="1240" key="DiffContextDialog" timestamp="1609751253306">
       <screen x="0" y="23" width="2560" height="1417" />
     </state>
     <state x="100" y="100" width="2360" height="1240" key="DiffContextDialog/-1680.211.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602038950079" />
     <state x="100" y="121" key="DiffContextDialog/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609751253306" />
-    <state width="1235" height="540" key="GridCell.Tab.0.bottom" timestamp="1609845829246">
+    <state width="1235" height="509" key="GridCell.Tab.0.bottom" timestamp="1609846548153">
       <screen x="0" y="23" width="2560" height="1417" />
     </state>
     <state width="2518" height="230" key="GridCell.Tab.0.bottom/-1680.211.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602041097892" />
     <state width="2518" height="525" key="GridCell.Tab.0.bottom/-1680.234.1680.1027/0.0.2560.1440@0.0.2560.1440" timestamp="1601971593634" />
     <state width="1638" height="213" key="GridCell.Tab.0.bottom/-1680.234.1680.960/0.23.2560.1417@-1680.234.1680.960" timestamp="1609839520348" />
-    <state width="1235" height="540" key="GridCell.Tab.0.bottom/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609845829246" />
+    <state width="1235" height="509" key="GridCell.Tab.0.bottom/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609846548153" />
     <state width="1638" height="177" key="GridCell.Tab.0.bottom/-1680.234.1680.961/0.23.2560.1417@-1680.234.1680.961" timestamp="1609834461788" />
     <state width="2518" height="351" key="GridCell.Tab.0.bottom/-1680.234.1680.961/0.23.2560.1417@0.23.2560.1417" timestamp="1609296327999" />
     <state width="1638" height="230" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1602084773015" />
     <state width="1638" height="241" key="GridCell.Tab.0.bottom/0.23.1680.960/1680.23.1920.1057@0.23.1680.960" timestamp="1609775276502" />
     <state width="1235" height="474" key="GridCell.Tab.0.bottom/0.23.1680.960@0.23.1680.960" timestamp="1609348385905" />
     <state width="1638" height="539" key="GridCell.Tab.0.bottom/0.23.1680.961/1680.23.1920.1057@0.23.1680.961" timestamp="1608824478910" />
-    <state width="1235" height="540" key="GridCell.Tab.0.center" timestamp="1609845829245">
+    <state width="1235" height="509" key="GridCell.Tab.0.center" timestamp="1609846548153">
       <screen x="0" y="23" width="2560" height="1417" />
     </state>
     <state width="2518" height="230" key="GridCell.Tab.0.center/-1680.211.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602041097890" />
     <state width="2518" height="525" key="GridCell.Tab.0.center/-1680.234.1680.1027/0.0.2560.1440@0.0.2560.1440" timestamp="1601971593633" />
     <state width="1638" height="213" key="GridCell.Tab.0.center/-1680.234.1680.960/0.23.2560.1417@-1680.234.1680.960" timestamp="1609839520347" />
-    <state width="1235" height="540" key="GridCell.Tab.0.center/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609845829245" />
+    <state width="1235" height="509" key="GridCell.Tab.0.center/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609846548153" />
     <state width="1638" height="177" key="GridCell.Tab.0.center/-1680.234.1680.961/0.23.2560.1417@-1680.234.1680.961" timestamp="1609834461787" />
     <state width="2518" height="351" key="GridCell.Tab.0.center/-1680.234.1680.961/0.23.2560.1417@0.23.2560.1417" timestamp="1609296327998" />
     <state width="1638" height="230" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1602084773014" />
     <state width="1638" height="241" key="GridCell.Tab.0.center/0.23.1680.960/1680.23.1920.1057@0.23.1680.960" timestamp="1609775276502" />
     <state width="1235" height="474" key="GridCell.Tab.0.center/0.23.1680.960@0.23.1680.960" timestamp="1609348385904" />
     <state width="1638" height="539" key="GridCell.Tab.0.center/0.23.1680.961/1680.23.1920.1057@0.23.1680.961" timestamp="1608824478909" />
-    <state width="1235" height="540" key="GridCell.Tab.0.left" timestamp="1609845829245">
+    <state width="1235" height="509" key="GridCell.Tab.0.left" timestamp="1609846548152">
       <screen x="0" y="23" width="2560" height="1417" />
     </state>
     <state width="2518" height="230" key="GridCell.Tab.0.left/-1680.211.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602041097889" />
     <state width="2518" height="525" key="GridCell.Tab.0.left/-1680.234.1680.1027/0.0.2560.1440@0.0.2560.1440" timestamp="1601971593632" />
     <state width="1638" height="213" key="GridCell.Tab.0.left/-1680.234.1680.960/0.23.2560.1417@-1680.234.1680.960" timestamp="1609839520346" />
-    <state width="1235" height="540" key="GridCell.Tab.0.left/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609845829245" />
+    <state width="1235" height="509" key="GridCell.Tab.0.left/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609846548152" />
     <state width="1638" height="177" key="GridCell.Tab.0.left/-1680.234.1680.961/0.23.2560.1417@-1680.234.1680.961" timestamp="1609834461787" />
     <state width="2518" height="351" key="GridCell.Tab.0.left/-1680.234.1680.961/0.23.2560.1417@0.23.2560.1417" timestamp="1609296327997" />
     <state width="1638" height="230" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1602084773014" />
     <state width="1638" height="241" key="GridCell.Tab.0.left/0.23.1680.960/1680.23.1920.1057@0.23.1680.960" timestamp="1609775276502" />
     <state width="1235" height="474" key="GridCell.Tab.0.left/0.23.1680.960@0.23.1680.960" timestamp="1609348385904" />
     <state width="1638" height="539" key="GridCell.Tab.0.left/0.23.1680.961/1680.23.1920.1057@0.23.1680.961" timestamp="1608824478909" />
-    <state width="1235" height="540" key="GridCell.Tab.0.right" timestamp="1609845829246">
+    <state width="1235" height="509" key="GridCell.Tab.0.right" timestamp="1609846548153">
       <screen x="0" y="23" width="2560" height="1417" />
     </state>
     <state width="2518" height="230" key="GridCell.Tab.0.right/-1680.211.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602041097891" />
     <state width="2518" height="525" key="GridCell.Tab.0.right/-1680.234.1680.1027/0.0.2560.1440@0.0.2560.1440" timestamp="1601971593633" />
     <state width="1638" height="213" key="GridCell.Tab.0.right/-1680.234.1680.960/0.23.2560.1417@-1680.234.1680.960" timestamp="1609839520347" />
-    <state width="1235" height="540" key="GridCell.Tab.0.right/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609845829246" />
+    <state width="1235" height="509" key="GridCell.Tab.0.right/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609846548153" />
     <state width="1638" height="177" key="GridCell.Tab.0.right/-1680.234.1680.961/0.23.2560.1417@-1680.234.1680.961" timestamp="1609834461788" />
     <state width="2518" height="351" key="GridCell.Tab.0.right/-1680.234.1680.961/0.23.2560.1417@0.23.2560.1417" timestamp="1609296327998" />
     <state width="1638" height="230" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1602084773014" />
@@ -342,10 +337,10 @@
     </state>
     <state x="789" y="370" key="SettingsEditor/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1602145140227" />
     <state x="789" y="370" key="SettingsEditor/-1680.234.1680.961/0.23.2560.1417@0.23.2560.1417" timestamp="1602144973260" />
-    <state x="880" y="471" key="Vcs.Push.Dialog.v2" timestamp="1609751290615">
+    <state x="880" y="471" key="Vcs.Push.Dialog.v2" timestamp="1609846012529">
       <screen x="0" y="23" width="2560" height="1417" />
     </state>
-    <state x="880" y="471" key="Vcs.Push.Dialog.v2/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609751290615" />
+    <state x="880" y="471" key="Vcs.Push.Dialog.v2/-1680.234.1680.960/0.23.2560.1417@0.23.2560.1417" timestamp="1609846012529" />
     <state x="1072" y="652" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1609751426366">
       <screen x="0" y="23" width="2560" height="1417" />
     </state>
@@ -369,7 +364,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TransE$cal_sim.coverage" NAME="cal_sim Coverage Results" MODIFIED="1609251290606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/TransE$TransE.coverage" NAME="TransE Coverage Results" MODIFIED="1609753029326" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/TransE$test.coverage" NAME="test Coverage Results" MODIFIED="1609845920994" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/TransE$test.coverage" NAME="test Coverage Results" MODIFIED="1609846548146" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/TransE$learnTF.coverage" NAME="learnTF Coverage Results" MODIFIED="1608194462460" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
