@@ -105,27 +105,36 @@ class Test:
 
 
     def getRank(self):
-        start = time.clock()
+        start = time.process_time()
         cou = 0
         no_type = []
         all_hr_num=0
         all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1=' ')
+        print(len(all_tail_topk))
+        # all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1=' ')
         for triplet in self.tripleListTest:
+            once = time.process_time()
+            tail_topk = []
             # print("第 %s 个 Triple"%cou)
             if cou % 200 == 0:
-                print("Time using: %s mins, Tested Triples:%s"%(round((time.clock() - start)/60, 2), cou))
+                print("Time using: %s mins, Tested Triples:%s"%(round((time.process_time() - start)/60, 2), cou))
             rankList = {}
+            pass_num=0
             try:
                 if self.type_filter:
-                    if not all_tail_topk.get((triplet[0], triplet[2])):
-                        tail_topk = self.calc_k_sim(self.ent2Type[triplet[0]], triplet[2])
-                        all_tail_topk[(triplet[0], triplet[2])] = tail_topk
-                        no_type.append((triplet[0], triplet[2]))
-                    else:
-                        tail_topk = all_tail_topk.get((triplet[0], triplet[2]))
-                    all_hr_num+=1
+                    types = self.ent2Type[triplet[0]]
+                    r = triplet[2]
+                    for Type in types:
+                        if not all_tail_topk.get((Type, triplet[2])):
+                            print("居然还有错漏的？")
+                            tail_topk = list(self.calc_k_sim([Type], triplet[2]))
+                            all_tail_topk[(triplet[0], triplet[2])] = tail_topk
+                            no_type.append((Type, triplet[2]))
+                        else:
+                            tail_topk = all_tail_topk.get((Type, triplet[2]))
+                        all_hr_num+=1
             except KeyError as e:
-                # print(e)
+                print(e)
                 continue
             for entityTemp in self.entityList.keys():
                 if self.label == "head":
@@ -134,13 +143,25 @@ class Test:
                         continue
                     rankList[entityTemp] = distance(self.entityList[entityTemp], self.entityList[triplet[1]], self.relationList[triplet[2]])
                 else:#
-                    if self.type_filter and not self.type_suit(triplet[0], entityTemp, tail_topk, self.label):
-                        # print("Tail: %s is skiping for Head: %s"%(entityTemp, triplet[0]))
-                        continue
+                    if self.type_filter:
+                        target = False
+                        try:
+                            for t in self.ent2Type[entityTemp]:
+                                if t in tail_topk:
+                                    target = True
+                            # print("Tail: %s is skiping for Head: %s"%(entityTemp, triplet[0]))
+                        except KeyError as e:
+                            print(e)
+                        if not target:
+                            pass_num += 1
+                            continue
                     corruptedTriplet = (triplet[0], entityTemp, triplet[2])
                     if self.isFit and (corruptedTriplet in self.tripleListTrain):
                         continue
                     rankList[entityTemp] = distance(self.entityList[triplet[0]], self.entityList[entityTemp], self.relationList[triplet[2]])
+            cost = round(time.process_time()-once,2)
+            if cost > 0.3:
+                print(len(tail_topk),'Time:', round(time.process_time()-once,2),'pass_rate:',round(pass_num/len(self.entityList.keys()),3))
             # 根据第二个元素进行排序
             nameRank = sorted(rankList.items(), key = operator.itemgetter(1))
             if self.label == 'head':
@@ -160,17 +181,17 @@ class Test:
             # if cou % 10000 == 0:
             #     print("getRank" + str(cou))
         print("未知的类型头和关系长度%s, 所有h+r的数目%s"%(len(no_type), all_hr_num))
-        print('Time Usage: ',time.clock() - start)
+        print('Time Usage: ',time.process_time() - start)
 
     def outputTopK(self):
-        start = time.clock()
+        start = time.process_time()
         cou = 0
         all_tail_type_topk = {}
         alltype = list(self.typeList.keys())
         for triplet in self.tripleListTest:
             # print("第 %s 个 Triple"%cou)
             if cou % 100 == 0:
-                print("Time using: %s mins, Tested Triples:%s"%(round((time.clock() - start)/60, 2), cou))
+                print("Time using: %s mins, Tested Triples:%s"%(round((time.process_time() - start)/60, 2), cou))
             cou+=1
             try:
                 types = self.ent2Type[triplet[0]]
@@ -204,7 +225,7 @@ class Test:
                             for key, value in all_tail_type_topk.items():
                                 fi.write(key[0] +',' + key[1] + ','+' '.join(value[:num[i]])+'\n')
 
-        print('Time Usage: ',time.clock() - start)
+        print('Time Usage: ',time.process_time() - start)
 
     def getRelationRank(self):
         cou = 0
@@ -344,7 +365,7 @@ if __name__ == '__main__':
 
     # testTailRaw = Test(entityList, entityVectorList, typeList, typeVectorList, relationList, relationVectorList, typeRelationList, typeRelationVectorList,  tripleListTrain, tripleListTest, label = "tail",k=20)
     # testTailRaw.outputTopK()
-    combine_Topk_Constriant()
+    # combine_Topk_Constriant()
     for k in [20]:
         testTailRaw = Test(entityList, entityVectorList, typeList, typeVectorList, relationList, relationVectorList, typeRelationList, typeRelationVectorList,  tripleListTrain, tripleListTest, label = "tail",k=k)
         # testTailRaw.outputTopK()
