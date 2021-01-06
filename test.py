@@ -107,11 +107,11 @@ class Test:
     def getRank(self):
         start = time.process_time()
         cou = 0
-        no_type = []
         all_hr_num=0
         all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1=' ')
         print(len(all_tail_topk))
         # all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1=' ')
+        cost_0_3 = 0
         for triplet in self.tripleListTest:
             once = time.process_time()
             tail_topk = []
@@ -125,13 +125,7 @@ class Test:
                     types = self.ent2Type[triplet[0]]
                     r = triplet[2]
                     for Type in types:
-                        if not all_tail_topk.get((Type, triplet[2])):
-                            print("居然还有错漏的？")
-                            tail_topk = list(self.calc_k_sim([Type], triplet[2]))
-                            all_tail_topk[(triplet[0], triplet[2])] = tail_topk
-                            no_type.append((Type, triplet[2]))
-                        else:
-                            tail_topk = all_tail_topk.get((Type, triplet[2]))
+                        tail_topk = all_tail_topk.get((Type, triplet[2]))
                         all_hr_num+=1
             except KeyError as e:
                 print(e)
@@ -151,7 +145,7 @@ class Test:
                                     target = True
                             # print("Tail: %s is skiping for Head: %s"%(entityTemp, triplet[0]))
                         except KeyError as e:
-                            print(e)
+                            pass
                         if not target:
                             pass_num += 1
                             continue
@@ -161,7 +155,8 @@ class Test:
                     rankList[entityTemp] = distance(self.entityList[triplet[0]], self.entityList[entityTemp], self.relationList[triplet[2]])
             cost = round(time.process_time()-once,2)
             if cost > 0.3:
-                print(len(tail_topk),'Time:', round(time.process_time()-once,2),'pass_rate:',round(pass_num/len(self.entityList.keys()),3))
+                cost_0_3 += 1
+                print(len(tail_topk),'%s/%s'%(cost_0_3,cou), 'Time:', round(time.process_time()-once,2),'pass_rate:',round(pass_num/len(self.entityList.keys()),3))
             # 根据第二个元素进行排序
             nameRank = sorted(rankList.items(), key = operator.itemgetter(1))
             if self.label == 'head':
@@ -176,11 +171,12 @@ class Test:
                 x += 1
             if x<=len(nameRank):
                 self.rank.append((triplet, triplet[numTri], nameRank[0][0], x))
+            # else:
+            #     print(triplet)
             # print(x)
             cou += 1
             # if cou % 10000 == 0:
             #     print("getRank" + str(cou))
-        print("未知的类型头和关系长度%s, 所有h+r的数目%s"%(len(no_type), all_hr_num))
         print('Time Usage: ',time.process_time() - start)
 
     def outputTopK(self):
@@ -292,7 +288,7 @@ def readTypesConstriant(file = 'hr2types-all.txt', sp=',',sp1='\t'):
             hr2types[(h,r)] = ts.split(sp1)
     return hr2types
 
-def combine_Topk_Constriant(file='top20.txt',sp=',',sp1=' '):
+def combine_Topk_Constriant(file='top10.txt',sp=',',sp1=' '):
     topk = {}
     with open(file) as f:
         lines = f.readlines()
@@ -375,7 +371,7 @@ if __name__ == '__main__':
             testTailRaw.writeRank("data/" + "testTailRaw_filter_k" + str(k) + ".txt")
         else:
             testTailRaw.writeRank("data/" + "testTailRaw_origin" + ".txt")
-
+    #
 
     # testHeadFit = Test(entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest, isFit = True)
     # testHeadFit.getRank()
