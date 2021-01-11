@@ -45,6 +45,49 @@ class Test:
             file.write(str(r[3]) + "\n")
         file.close()
 
+    def outputTopK(self):
+        start = time.process_time()
+        cou = 0
+        all_tail_type_topk = {}
+        alltype = list(self.typeList.keys())
+        for triplet in self.tripleListTest:
+            # print("第 %s 个 Triple"%cou)
+            if cou % 100 == 0:
+                print("Time using: %s mins, Tested Triples:%s"%(round((time.process_time() - start)/60, 2), cou))
+            cou+=1
+            try:
+                types = self.ent2Type[triplet[0]]
+                top_k = []
+                type_sim = {}
+                r = triplet[2]
+                for Type in types:
+                    if all_tail_type_topk.get((Type, r)) != None:
+                        continue
+                    h_r = array(self.typeList[Type]) + array(self.typeRelationList[triplet[2]])
+                    for t in alltype:
+                        type_sim[t] = self.calc_sim(h_r, array(self.typeList[t]), 'L1')
+                    sorted_sim = sorted(type_sim.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
+                    # if self.show:
+                    #     print(sorted_sim)
+                    #     self.show = False
+                    for x in range(20):
+                        top_k.append(sorted_sim[x][0])
+                    all_tail_type_topk[(Type, r)] = top_k
+            except KeyError as e:
+                print(e)
+                continue
+        with open('top5.txt','w',encoding='utf8') as top5:
+            with open('top10.txt','w',encoding='utf8') as top10:
+                with open('top15.txt','w',encoding='utf8') as top15:
+                    with open('top20.txt','w',encoding='utf8') as top20:
+                        files = [top5,top10,top15,top20]
+                        num = [5,10,15,20]
+                        for i in range(len(files)):
+                            fi = files[i]
+                            for key, value in all_tail_type_topk.items():
+                                fi.write(key[0] +',' + key[1] + ','+' '.join(value[:num[i]])+'\n')
+
+        print('Time Usage: ',time.process_time() - start)
 
 # ============================= ZZB =============================
     def get_ent2type(self):
@@ -62,10 +105,19 @@ class Test:
                             self.ent2Type[ent].append(type)
 
 
-    def calc_cos_sim(self, e1, e2):
-        return e1.dot(e2) / (linalg.norm(e1) * linalg.norm(e2) )
+    def calc_sim(self, e1, e2, type='cos'):
+        if type == 'cos':
+            return e1.dot(e2) / (linalg.norm(e1) * linalg.norm(e2) )
+        elif type == 'L1':
+            d = linalg.norm(e1 - e2)
+            if d > 0:
+                return d
+            else:
+                return 0
+        elif type == 'L2':
+            return pow((e1-e2),2)
 
-    def calc_k_sim(self, types, r, label = 'tail'):
+    def calc_k_sim(self, types, r, label = 'tail', cal_type = 'cos'):
         print("来了来了！")
         k = self.k
         top_k = set()
@@ -77,7 +129,7 @@ class Test:
                 h_r = array(self.typeList[type]) - array(self.typeRelationList[r])
             alltype = list(self.typeList.keys())
             for t in alltype:
-                 type_sim[t] = self.calc_cos_sim(h_r, array(self.typeList[t]))
+                 type_sim[t] = self.calc_sim(h_r, array(self.typeList[t]), cal_type)
             sorted_sim = sorted(type_sim.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
             # if self.show:
             #     print(sorted_sim)
@@ -109,18 +161,19 @@ class Test:
         start = time.process_time()
         cou = 0
         all_hr_num=0
-        all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1=' ')
+        all_tail_topk = readTypesConstriant('top20.txt',sp=',',sp1=' ')
         print(len(all_tail_topk))
         # all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1='  ')
-        cost_0_3 = 0
+        type_filt_usage = 0
         wrong_kill = 0
-        topk_too_big = 0
-        too_big = False
+        filter_use = 0
+        test_use = 0
+        target_num = []
         for triplet in self.tripleListTest:
-            once = time.process_time()
+            too_big = False
             tail_topk = []
             # print("第 %s 个 Triple"%cou)
-            if cou % 200 == 0:
+            if cou % 50 == 0:
                 print("Time using: %s mins, Tested Triples:%s"%(round((time.process_time() - start)/60, 2), cou))
             rankList = {}
             pass_num=0
@@ -134,38 +187,41 @@ class Test:
             except KeyError as e:
                 print(e)
                 continue
-            tail_topk = list(set(tail_topk))
-            for entityTemp in self.entityList.keys():
-                if len(tail_topk) > 100:
-                    topk_too_big += 1
-                    too_big = True
-                    break
-                if self.label == "head":
-                    corruptedTriplet = (entityTemp, triplet[1], triplet[2])
-                    if self.isFit and (corruptedTriplet in self.tripleListTrain):
-                        continue
-                    rankList[entityTemp] = distance(self.entityList[entityTemp], self.entityList[triplet[1]], self.relationList[triplet[2]])
-                else:#
-                    if self.type_filter  and not too_big:
-                        target = False
-                        try:
-                            for t in self.ent2Type[entityTemp]:
-                                if t in tail_topk:
-                                    target = True
-                                    break
-                            # print("Tail: %s is skiping for Head: %s"%(entityTemp, triplet[0]))
-                        except KeyError as e:
-                            pass
-                        if not target:
-                            pass_num += 1
+            tail_topk = set(tail_topk)
+            no_target_num = []
+            if len(tail_topk) <= 200:
+                for entityTemp in self.entityList.keys():
+                    once = time.process_time()
+                    if self.label == "head":
+                        corruptedTriplet = (entityTemp, triplet[1], triplet[2])
+                        if self.isFit and (corruptedTriplet in self.tripleListTrain):
                             continue
-                    corruptedTriplet = (triplet[0], entityTemp, triplet[2])
-                    if self.isFit and (corruptedTriplet in self.tripleListTrain):
-                        continue
-                    rankList[entityTemp] = distance(self.entityList[triplet[0]], self.entityList[entityTemp], self.relationList[triplet[2]])
-             # 根据第二个元素进行排序
-            if too_big:
-                too_big = False
+                        rankList[entityTemp] = distance(self.entityList[entityTemp], self.entityList[triplet[1]], self.relationList[triplet[2]])
+                    else:#
+                        target = False
+                        if self.type_filter:
+                            try:
+                                for t in self.ent2Type[entityTemp]:
+                                    if t in tail_topk:
+                                        target = True
+                                        break
+                                # print("Tail: %s is skiping for Head: %s"%(entityTemp, triplet[0]))
+                            except KeyError as e:
+                                pass
+                            # filter_use += time.process_time() - once
+                            if not target:
+                                pass_num += 1
+                                continue
+                        corruptedTriplet = (triplet[0], entityTemp, triplet[2])
+                        if self.isFit and (corruptedTriplet in self.tripleListTrain):
+                            continue
+                        rankList[entityTemp] = distance(self.entityList[triplet[0]], self.entityList[entityTemp], self.relationList[triplet[2]])
+                        # if target:
+                        #     type_filt_usage
+                        #     test_use += time.process_time() - once
+            else:
+                print("top20都能直接")
+            # 根据第二个元素进行排序
             nameRank = sorted(rankList.items(), key = operator.itemgetter(1))
             if self.label == 'head':
                 # 正确答案的索引位置
@@ -178,10 +234,11 @@ class Test:
                     break
                 x += 1
             if x<=len(nameRank):
+                target_num.append(len(tail_topk))
                 self.rank.append((triplet, triplet[numTri], nameRank[0][0], x))
             else:
+                no_target_num.append(len(tail_topk))
                 wrong_kill += 1
-                # print("错杀,", wrong_k/ill, '/跳过：',topk_too_big,' / ',cou)
                 for entityTemp in self.entityList.keys():
                     if self.label == "head":
                         corruptedTriplet = (entityTemp, triplet[1], triplet[2])
@@ -207,63 +264,19 @@ class Test:
                         break
                     x += 1
                 self.rank.append((triplet, triplet[numTri], nameRank[0][0], x))
-            # else:
-            #     print(triplet)
-            # print(x)
+
             cou += 1
             # if cou % 10000 == 0:
             #     print("getRank" + str(cou))
-            cost = round(time.process_time() - once, 2)
+            # cost = round(time.process_time() - once, 2)
             # if cost > 0.3:
             #     cost_0_3 += 1
             #     print(len(tail_topk), '%s/%s' % (cost_0_3, cou), 'len of tail topk', len(tail_topk), 'Time:', round(time.process_time() - once, 2),
             #           'pass_rate:', round(pass_num / len(self.entityList.keys()), 3))
-
+        print('target : %s' % (round(sum(target_num)/len(target_num), 2)))
+        # print('Filter / Test : %s/%s' % (round(filter_use, 2), round(test_use, 2)))
         print('Time Usage: ',time.process_time() - start)
 
-    def outputTopK(self):
-        start = time.process_time()
-        cou = 0
-        all_tail_type_topk = {}
-        alltype = list(self.typeList.keys())
-        for triplet in self.tripleListTest:
-            # print("第 %s 个 Triple"%cou)
-            if cou % 100 == 0:
-                print("Time using: %s mins, Tested Triples:%s"%(round((time.process_time() - start)/60, 2), cou))
-            cou+=1
-            try:
-                types = self.ent2Type[triplet[0]]
-                top_k = []
-                type_sim = {}
-                r = triplet[2]
-                for Type in types:
-                    if all_tail_type_topk.get((Type, r)) != None:
-                        continue
-                    h_r = array(self.typeList[Type]) + array(self.typeRelationList[triplet[2]])
-                    for t in alltype:
-                        type_sim[t] = self.calc_cos_sim(h_r, array(self.typeList[t]))
-                    sorted_sim = sorted(type_sim.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
-                    # if self.show:
-                    #     print(sorted_sim)
-                    #     self.show = False
-                    for x in range(20):
-                        top_k.append(sorted_sim[x][0])
-                    all_tail_type_topk[(Type, r)] = top_k
-            except KeyError as e:
-                print(e)
-                continue
-        with open('top5.txt','w',encoding='utf8') as top5:
-            with open('top10.txt','w',encoding='utf8') as top10:
-                with open('top15.txt','w',encoding='utf8') as top15:
-                    with open('top20.txt','w',encoding='utf8') as top20:
-                        files = [top5,top10,top15,top20]
-                        num = [5,10,15,20]
-                        for i in range(len(files)):
-                            fi = files[i]
-                            for key, value in all_tail_type_topk.items():
-                                fi.write(key[0] +',' + key[1] + ','+' '.join(value[:num[i]])+'\n')
-
-        print('Time Usage: ',time.process_time() - start)
 
     def getRelationRank(self):
         cou = 0
@@ -311,8 +324,8 @@ def openD(dir, sp="\t"):
     with open(dir) as file:
         lines = file.readlines()
         for line in lines:
-            # if num > 40:
-            #     break
+            if num > 1200:
+                break
             triple = line.strip().split(sp)
             if(len(triple)<3):
                 continue
@@ -341,7 +354,7 @@ def combine_Topk_Constriant(file='top10.txt',sp=',',sp1=' '):
     print(len(hr2types), len(topk))
     overleap = 0
     hr_1 = {}
-    with open('hr2types-complete.txt','w', encoding='utf8') as hr2txt:
+    with open('hr2types-all.txt','w', encoding='utf8') as hr2txt:
         for hr in hr2types.keys():
             try:
                 hr_1[hr] = list(set(hr2types[hr] + topk[hr]))
@@ -382,7 +395,6 @@ if __name__ == '__main__':
     # 加载TransE训练出来的关系向量
     relationVectorList, relationList = loadData(dirRelationVector)
 
-
     dirTypeVector = "data/FB15k/typeVector.txt"
     # 加载TransE训练出来的类型向量
     typeVectorList, typeList = loadData(dirTypeVector)
@@ -410,10 +422,10 @@ if __name__ == '__main__':
         # combine_Topk_Constriant()
         testTailRaw.getRank()
         print(testTailRaw.getMeanRank())
-        if k>0:
-            testTailRaw.writeRank("data/" + "testTailRaw_filter_k" + str(k) + ".txt")
-        else:
-            testTailRaw.writeRank("data/" + "testTailRaw_origin" + ".txt")
+        # if k>0:
+        #     testTailRaw.writeRank("data/" + "testTailRaw_filter_k" + str(k) + ".txt")
+        # else:
+        #     testTailRaw.writeRank("data/" + "testTailRaw_origin" + ".txt")
     #
 
     # testHeadFit = Test(entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest, isFit = True)
