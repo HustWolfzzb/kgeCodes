@@ -19,10 +19,10 @@ with open(bench_path + "relation2id.txt", "r",encoding='utf8')as f:
         e, i = content.strip().split("\t")
         id2rel.append(e)
 
-fe = open(json_path + "entity2vec-d.txt", "w")
-fr = open(json_path + "relation2vec-d.txt", "w")
+fe = open(json_path + "typeVector-cos.txt", "w")
+fr = open(json_path + "typeRelationVector-cos.txt", "w")
 
-with open(json_path + "transd.json", 'r') as load_f:
+with open(json_path + "cos.json", 'r') as load_f:
     strF = load_f.read()
     if len(strF) > 0:
         load_dict = json.loads(strF)

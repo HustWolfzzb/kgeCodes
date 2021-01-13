@@ -160,11 +160,12 @@ class Test:
     def getRank(self):
         start = time.process_time()
         cou = 0
-        all_hr_num=0
-        all_tail_topk = readTypesConstriant('top20.txt',sp=',',sp1=' ')
+        all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1=' ')
+        print(all_tail_topk[list(all_tail_topk.keys())[0]])
+        # all_tail_topk = readTypesConstriant('top20-L1.txt',sp=',',sp1=' ')
+        # all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1=' ')
         print(len(all_tail_topk))
-        # all_tail_topk = readTypesConstriant('hr2types-complete.txt',sp=',',sp1='  ')
-        type_filt_usage = 0
+        type_filt_used = True
         wrong_kill = 0
         filter_use = 0
         test_use = 0
@@ -173,7 +174,7 @@ class Test:
             too_big = False
             tail_topk = []
             # print("第 %s 个 Triple"%cou)
-            if cou % 50 == 0:
+            if cou % 400 == 0:
                 print("Time using: %s mins, Tested Triples:%s"%(round((time.process_time() - start)/60, 2), cou))
             rankList = {}
             pass_num=0
@@ -183,13 +184,12 @@ class Test:
                     r = triplet[2]
                     for Type in types:
                         tail_topk += all_tail_topk.get((Type, triplet[2]))
-                        all_hr_num+=1
             except KeyError as e:
                 print(e)
-                continue
+                type_filt_used = False
             tail_topk = set(tail_topk)
             no_target_num = []
-            if len(tail_topk) <= 200:
+            if len(tail_topk) <= 400:
                 for entityTemp in self.entityList.keys():
                     once = time.process_time()
                     if self.label == "head":
@@ -199,7 +199,7 @@ class Test:
                         rankList[entityTemp] = distance(self.entityList[entityTemp], self.entityList[triplet[1]], self.relationList[triplet[2]])
                     else:#
                         target = False
-                        if self.type_filter:
+                        if self.type_filter and type_filt_used:
                             try:
                                 for t in self.ent2Type[entityTemp]:
                                     if t in tail_topk:
@@ -217,11 +217,12 @@ class Test:
                             continue
                         rankList[entityTemp] = distance(self.entityList[triplet[0]], self.entityList[entityTemp], self.relationList[triplet[2]])
                         # if target:
-                        #     type_filt_usage
+                        #     type_filt_used
                         #     test_use += time.process_time() - once
             else:
-                print("top20都能直接")
+                print("top20都能直接跳出去？")
             # 根据第二个元素进行排序
+            type_filt_used = True
             nameRank = sorted(rankList.items(), key = operator.itemgetter(1))
             if self.label == 'head':
                 # 正确答案的索引位置
@@ -234,7 +235,8 @@ class Test:
                     break
                 x += 1
             if x<=len(nameRank):
-                target_num.append(len(tail_topk))
+                if type_filt_used:
+                    target_num.append(len(tail_topk))
                 self.rank.append((triplet, triplet[numTri], nameRank[0][0], x))
             else:
                 no_target_num.append(len(tail_topk))
@@ -273,7 +275,7 @@ class Test:
             #     cost_0_3 += 1
             #     print(len(tail_topk), '%s/%s' % (cost_0_3, cou), 'len of tail topk', len(tail_topk), 'Time:', round(time.process_time() - once, 2),
             #           'pass_rate:', round(pass_num / len(self.entityList.keys()), 3))
-        print('target : %s' % (round(sum(target_num)/len(target_num), 2)))
+        print('target : %s / %s' % (round(sum(target_num)/len(target_num), 2), len(target_num)))
         # print('Filter / Test : %s/%s' % (round(filter_use, 2), round(test_use, 2)))
         print('Time Usage: ',time.process_time() - start)
 
@@ -340,21 +342,24 @@ def readTypesConstriant(file = 'top20.txt', sp=',',sp1='\t'):
         lines = f.readlines()
         for l in lines:
             h,r,ts = l.strip().split(sp)
-            hr2types[(h,r)] = ts.split(sp1)
+            if sp1 != '':
+                hr2types[(h,r)] = ts.split(sp1)
+            else:
+                hr2types[(h,r)] = ts.split()
     return hr2types
 
-def combine_Topk_Constriant(file='top10.txt',sp=',',sp1=' '):
+def combine_Topk_Constriant(file='top5-L1.txt',sp=',',sp1=' '):
     topk = {}
     with open(file) as f:
         lines = f.readlines()
         for l in lines:
             h,r,ts = l.strip().split(sp)
             topk[(h,r)] = ts.split(sp1)
-    hr2types = readTypesConstriant()
+    hr2types = readTypesConstriant('hr2types-train.txt',sp=',')
     print(len(hr2types), len(topk))
     overleap = 0
     hr_1 = {}
-    with open('hr2types-all.txt','w', encoding='utf8') as hr2txt:
+    with open('hr2types-complete.txt','w', encoding='utf8') as hr2txt:
         for hr in hr2types.keys():
             try:
                 hr_1[hr] = list(set(hr2types[hr] + topk[hr]))
@@ -416,7 +421,7 @@ if __name__ == '__main__':
     # testTailRaw = Test(entityList, entityVectorList, typeList, typeVectorList, relationList, relationVectorList, typeRelationList, typeRelationVectorList,  tripleListTrain, tripleListTest, label = "tail",k=20)
     # testTailRaw.outputTopK()
     # combine_Topk_Constriant()
-    for k in [0,20]:
+    for k in [20]:
         testTailRaw = Test(entityList, entityVectorList, typeList, typeVectorList, relationList, relationVectorList, typeRelationList, typeRelationVectorList,  tripleListTrain, tripleListTest, label = "tail",k=k)
         # testTailRaw.outputTopK()
         # combine_Topk_Constriant()
